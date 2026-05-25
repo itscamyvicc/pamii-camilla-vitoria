@@ -24,14 +24,15 @@ export default function Chat() {
   const [loading, setLoading] = useState(true);
   const flatListRef = useRef<FlatList>(null);
 
-  const conversaId = getConversaId(usuarioLogado?.id || "", id);
+  const conversaId = getConversaId(usuarioLogado?.id || "", id); // O aplicativo não usa o ID de uma pessoa como o ID da conversa, mas sim um terceiro ID gerado a partir dos dois ID's.
 
+  // Recebe mensagens novas na hora, em tempo real, sem que o usuário precise ficar atualizando a página.
   useEffect(() => {
-    const unsubscribe = ouvirMensagens(conversaId, (msgs) => {
-      setMensagens(msgs);
+    const unsubscribe = ouvirMensagens(conversaId, (msgs) => { // Função de retorno que é chamada toda vez que tem uma nova mensagem.
+      setMensagens(msgs); // o Firebase detecta a mudança e joga a lista atualizada de mensagens para dentro do parâmetro.
       setLoading(false);
     });
-    return () => unsubscribe();
+    return () => unsubscribe(); // Função de Limpeza (cleanup): Quando o usuário fechar a tela, o chat é "desligado".
   }, [conversaId]);
 
   async function handleEnviar() {
@@ -65,7 +66,7 @@ export default function Chat() {
         <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
           <Ionicons name="arrow-back" size={20} color={TEXT} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle} numberOfLines={1}>{nome || "Conversa"}</Text>
+        <Text style={styles.headerTitle} numberOfLines={1}>{nome || "Conversa"}</Text> {/* Coloca o nome de quem você está conversando no topo.*/}
         <View style={styles.headerSpacer} />
       </View>
 

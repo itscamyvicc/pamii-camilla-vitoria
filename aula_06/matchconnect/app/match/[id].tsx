@@ -39,15 +39,15 @@ function calcMatch(a: string[], b: string[]) {
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 function getDisplayName(user: UserData) {
   return user.nome_completo || user.name || "Usuário";
-}
+} // Corretor de nomes: tenta descobrir qual é o nome do usuário para mostrar na tela.
 
 function getFirstName(user: UserData) {
   return getDisplayName(user).split(" ")[0];
-}
+} // Coletor de primeiro nome: Pega apenas o primeiro nome de alguém. Ideal para usar em mensagens amigáveis.
 
 function getInterests(user: UserData): string[] {
   return user.interesses || user.interests || [];
-}
+} // Garantidor de listas: Puxa a lista de gostos/interesses do usuário. 
 
 function getAvatarUri(user: UserData, fallbackName: string) {
   return (
@@ -55,13 +55,13 @@ function getAvatarUri(user: UserData, fallbackName: string) {
     user.photoURL ||
     `https://ui-avatars.com/api/?name=${encodeURIComponent(fallbackName)}&background=random`
   );
-}
+} // Gerador de foto inteligente: Descobre qual imagem mostrar no perfil da pessoa.
 
 // ─── Componente principal ─────────────────────────────────────────────────────
 export default function Match() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const { id } = useLocalSearchParams<{ id: string }>();
+  const { id } = useLocalSearchParams<{ id: string }>(); // O código usa esse id para ir lá no banco de dados e puxar o perfil da outra pessoa para comparar os interesses.
 
   const [otherUser, setOtherUser] = useState<UserData | null>(null);
   const [currentUser, setCurrentUser] = useState<UserData | null>(null);
