@@ -1,4 +1,4 @@
-// Proteção de rota.
+// Rota para carregar o link da página de login. 
 import { Redirect } from "expo-router";
 
 export default function Index() {

@@ -1,3 +1,3 @@
-// Autenticação e verificação de usuários já cadastrados.
+// Rota para carregar o link da página de login.
 import Login from "../components/Login";
 export default Login;

@@ -1,3 +1,3 @@
-// Permite que o usuário visualize e altere seus dados pessoais, mude sua foto de perfil e encerre a sua sessão de forma segura (User Management).
+// Rota para carregar o link da página de perfil do usuário.
 import Perfil from "../components/Perfil";
 export default Perfil;
