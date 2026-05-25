@@ -1,3 +1,4 @@
+// Desenhar o formulário de cadastro, controlar o que o usuário digita e enviar tudo para o banco de dados.
 import { useState } from "react";
 import { useRouter } from "expo-router";
 import {
@@ -18,23 +19,24 @@ const INTERESSES_OPCOES = [
   "Cinema", "Moda", "Natureza", "Dança", "Idiomas",
 ];
 
+// Coleta as informações do usuário (Estados Locais).
 export default function Cadastro() {
   const router = useRouter();
   const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
-  const [interessesSelecionados, setInteressesSelecionados] = useState<string[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [interessesSelecionados, setInteressesSelecionados] = useState<string[]>([]); // Em vez de guardar apenas um texto, guarda uma array de interesses selecionados.
+  const [loading, setLoading] = useState(false);  // Estado booleano para saber se o app está salvando os dados do usuário.
 
-  function toggleInteresse(interesse: string) {
-    setInteressesSelecionados((prev) =>
+  function toggleInteresse(interesse: string) { // Faz as tags funcionarem como um botão "liga" e "desliga" para selecionar ou desmarcar os interesses do usuário.
+    setInteressesSelecionados((prev) => // Muda de cor para o usuário saber se foi selecionado ou não.
       prev.includes(interesse)
         ? prev.filter((i) => i !== interesse)
         : [...prev, interesse]
     );
   }
 
-  async function handleCadastro() {
+  async function handleCadastro() {   // Executa um passo a passo de segurança antes de "falar" com o Firebase.
     if (!nome || !email || !senha) {
       Alert.alert("Atenção", "Preencha todos os campos.");
       return;
@@ -56,11 +58,11 @@ export default function Cadastro() {
   }
 
   return (
-    <KeyboardAvoidingView
+    <KeyboardAvoidingView   // A tela sobe automaticamente quando teclado do celular abre.
       style={styles.container}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
-      <ScrollView
+      <ScrollView   // Permite que a tela seja rolada para baixo caso o celular seja pequeno e o formulário não caiba inteiro.
         contentContainerStyle={styles.scroll}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}

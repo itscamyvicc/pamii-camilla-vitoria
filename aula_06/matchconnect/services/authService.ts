@@ -1,3 +1,4 @@
+// Isolar toda a parte burocrática de login, criação e exclusão de contas.
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -20,18 +21,18 @@ export interface LoginResult {
   error?: string;
 }
 
-// Usuário logado guardado globalmente
-export let usuarioLogado: LoginResult["user"] | null = null;
+// Usuário logado guardado globalmente.
+export let usuarioLogado: LoginResult["user"] | null = null; // Essa variável começa vazia.
 
 export async function loginUsuario(email: string, senha: string): Promise<LoginResult> {
   try {
-    const credencial = await signInWithEmailAndPassword(auth, email, senha);
+    const credencial = await signInWithEmailAndPassword(auth, email, senha); // Checar se as credenciais estão certas.
     const uid = credencial.user.uid;
 
     const docSnap = await getDoc(doc(db, "cadastroUsuario", uid));
     if (!docSnap.exists()) {
       return { success: false, error: "Perfil não encontrado." };
-    }
+    } // Assim que o usuário faz login com sucesso, o arquivo puxa os dados dele do banco de dados e joga dentro dessa variável.
 
     const dados = docSnap.data();
     usuarioLogado = {
@@ -58,10 +59,10 @@ export async function cadastrarUsuario(
   interesses: string[]
 ): Promise<LoginResult> {
   try {
-    const credencial = await createUserWithEmailAndPassword(auth, email, senha);
+    const credencial = await createUserWithEmailAndPassword(auth, email, senha); // Registra o e-mail e a senha no sistema de autenticação do Firebase.
     const uid = credencial.user.uid;
 
-    await setDoc(doc(db, "cadastroUsuario", uid), {
+    await setDoc(doc(db, "cadastroUsuario", uid), { // Cria um documento na coleção "cadastroUsuario" do Firestore, salvando o nome completo e a lista de interesses que o usuário escolheu.
       nome_completo: nome,
       email,
       interesses,
@@ -80,17 +81,17 @@ export async function cadastrarUsuario(
   }
 }
 
-export async function deletarConta(): Promise<{ success: boolean; error?: string }> {
+export async function deletarConta(): Promise<{ success: boolean; error?: string }> { // Essa função vai no banco de dados do Firestore e apaga o documento com os dados e o usuário do sistema.
   try {
     const currentUser = auth.currentUser;
     if (!currentUser || !usuarioLogado) {
       return { success: false, error: "Nenhum usuário logado." };
     }
 
-    // Deleta do Firestore
+    // Deleta do Firestore.
     await deleteDoc(doc(db, "cadastroUsuario", usuarioLogado.id));
 
-    // Deleta do Authentication
+    // Deleta do Authentication.
     await deleteUser(currentUser);
 
     usuarioLogado = null;
@@ -103,7 +104,7 @@ export async function deletarConta(): Promise<{ success: boolean; error?: string
   }
 }
 
-export async function logoutUsuario() {
+export async function logoutUsuario() { // Desconecta o usuário do Firebase Auth e limpa a variável, mudando ela para null e deixa o app pronto para o próximo login.
   await signOut(auth);
   usuarioLogado = null;
 }

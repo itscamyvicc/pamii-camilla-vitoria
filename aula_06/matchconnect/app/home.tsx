@@ -1,14 +1,15 @@
-import { useEffect, useState } from "react";
+// Tela principal do app, onde o usuário vê a listagem de outros usuários e pode clicar para ir à tela de match.
+
+import { useEffect, useState } from "react";  // Busca todos os usuários do Firebase.
 import { useRouter } from "expo-router";
 import {
-  View, Text, TextInput, Image, TouchableOpacity,
-  ScrollView, StyleSheet, Platform, ActivityIndicator,
+  View, Text, TextInput, Image, TouchableOpacity,   // Card com botão clicável para ir a tela de match.
+  ScrollView, StyleSheet, Platform, ActivityIndicator,  // Enquanto os dados são carregados, exibe a tela de loading.
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { getUsuarios, FirebaseUser } from "../services/userService";
 import { usuarioLogado } from "../services/authService";
 import { calcMatch } from "../data/users";
-
 const PRIMARY = "#BC405E";
 const PRIMARY_DARK = "#5A283E";
 const BG = "#F9F9EC";
@@ -24,6 +25,7 @@ export default function Home() {
   const [busca, setBusca] = useState("");
   const [loading, setLoading] = useState(true);
 
+  // Também filtra essa listagem para que o próprio usuário não apareça.
   useEffect(() => {
     async function carregar() {
       try {
@@ -63,7 +65,7 @@ export default function Home() {
         <Text style={styles.title}>Descobrir pessoas</Text>
         <TouchableOpacity
           style={styles.perfilButton}
-          onPress={() => router.push("/perfil")}
+          onPress={() => router.push("/perfil")}  // Botão para ir à tela de chat do usuário que você deu match (navegador do Expo Router).
         >
           <Ionicons name="person-outline" size={22} color={TEXT} />
         </TouchableOpacity>
@@ -72,7 +74,7 @@ export default function Home() {
       {/* Search */}
       <View style={styles.searchWrapper}>
         <Ionicons name="search-outline" size={20} color="#FFA79F" style={styles.searchIcon} />
-        <TextInput
+        <TextInput  // Campo de busca.
           placeholder="Buscar por interesses..."
           placeholderTextColor="#FFA79F"
           style={styles.searchInput}
@@ -88,7 +90,7 @@ export default function Home() {
           <Text style={styles.loadingText}>Carregando pessoas...</Text>
         </View>
       ) : (
-        <ScrollView
+        <ScrollView   // Lista deslizável.
           contentContainerStyle={styles.list}
           showsVerticalScrollIndicator={false}
         >
@@ -112,7 +114,8 @@ export default function Home() {
                 avatar: "",
                 interests: usuarioLogado?.interesses || [],
               };
-              const { percentage } = calcMatch(logadoAdaptado, userAdaptado);
+              const { percentage } = calcMatch(logadoAdaptado, userAdaptado);  // Liga o usuário logado ao de outros usuários para calcular a porcentagem de match. Depois, vira um badge no perfil do usuário listado.
+
 
               return (
                 <View key={u.id} style={styles.card}>
@@ -152,7 +155,7 @@ export default function Home() {
               );
             })
           )}
-        </ScrollView>
+        </ScrollView>   // Lista deslizável.
       )}
     </View>
   );

@@ -1,3 +1,5 @@
+// Tela de gerenciamento de conta do usuário.
+
 import { useState, useEffect } from "react";
 import { useRouter } from "expo-router";
 import {
@@ -5,16 +7,17 @@ import {
   StyleSheet, Platform, ScrollView, Alert, ActivityIndicator, Image,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { doc, updateDoc, getDoc } from "firebase/firestore"; 
+import { doc, updateDoc, getDoc } from "firebase/firestore"; // O app pega esse link e salva no cadastro do usuário.
 import { db } from "../config/firebase";
 import { usuarioLogado, logoutUsuario, deletarConta } from "../services/authService";
-import * as ImagePicker from "expo-image-picker";
+import * as ImagePicker from "expo-image-picker";  // Quando o usuário clica na foto, o app abre a galeria do celular para ele escolher uma imagem (API REST).
 
 const PRIMARY = "#BC405E";
 const PRIMARY_DARK = "#5A283E";
 const BG = "#F9F9EC";
 const TEXT = "#5A283E";
 
+// O Cloudinary (nuvem de hospedagem de imagens) armazena a foto e devolve um link de internet (URL).
 const CLOUDINARY_CLOUD = process.env.EXPO_PUBLIC_CLOUDINARY_CLOUD!;
 const CLOUDINARY_PRESET = process.env.EXPO_PUBLIC_CLOUDINARY_PRESET!;
 
@@ -24,7 +27,7 @@ const INTERESSES_OPCOES = [
   "Cinema", "Moda", "Natureza", "Dança", "Idiomas",
 ];
 
-// ✅ Função utilitária para gerar iniciais corretamente
+// Função utilitária para gerar iniciais corretamente
 function gerarIniciais(nome: string): string {
   if (!nome) return "?";
   return nome
@@ -44,7 +47,7 @@ export default function Perfil() {
   const [loading, setLoading] = useState(false);
   const [uploadingFoto, setUploadingFoto] = useState(false);
 
-  useEffect(() => {
+  useEffect(() => {   // Assim que o usuário abre a tela de perfil, o componente vai carregar as informações atuais dele.
     if (!usuarioLogado) {
       router.replace("/login");
       return;
@@ -53,7 +56,7 @@ export default function Perfil() {
     setEmail(usuarioLogado.email);
     setInteresses(usuarioLogado.interesses);
 
-    // ✅ Busca foto_url direto do Firestore (getDoc agora importado corretamente)
+    // Busca foto_url direto do Firestore (getDoc agora importado corretamente)
     getDoc(doc(db, "cadastroUsuario", usuarioLogado.id)).then((snap) => {
       if (snap.exists()) {
         const dados = snap.data();
@@ -94,7 +97,7 @@ export default function Perfil() {
       const url = await uploadParaCloudinary(uri);
       setFotoUrl(url);
 
-      await updateDoc(doc(db, "cadastroUsuario", usuarioLogado!.id), {
+      await updateDoc (doc(db, "cadastroUsuario", usuarioLogado!.id), { // Ela vai lá na coleção do banco de dados, encontra o ID desse usuário e sobrescreve as informações antigas pelas novas.
         foto_url: url,
       });
       usuarioLogado!.foto_url = url;
@@ -130,7 +133,7 @@ export default function Perfil() {
     }
     setLoading(true);
     try {
-      await updateDoc(doc(db, "cadastroUsuario", usuarioLogado!.id), {
+      await updateDoc (doc(db, "cadastroUsuario", usuarioLogado!.id), { // Ela vai lá na coleção do banco de dados, encontra o ID desse usuário e sobrescreve as informações antigas pelas novas.
         nome_completo: nome,
         email,
         interesses,
@@ -162,7 +165,7 @@ export default function Perfil() {
             const result = await deletarConta();
             setLoading(false);
             if (result.success) {
-              router.replace("/login");
+              router.replace("/login"); // Manda o usuário para a tela inicial.
             } else {
               Alert.alert("Erro", result.error);
             }
@@ -174,7 +177,7 @@ export default function Perfil() {
 
   function handleLogout() {
     logoutUsuario();
-    router.replace("/login");
+    router.replace("/login"); // Manda o usuário para a tela inicial.
   }
 
   return (
@@ -202,7 +205,7 @@ export default function Perfil() {
               <Image source={{ uri: fotoUrl }} style={styles.avatarImg} />
             ) : (
               <View style={styles.avatar}>
-                {/* ✅ Iniciais geradas corretamente: "Claudia" → "C", "Ana Lima" → "AL" */}
+                {/* Iniciais geradas corretamente: "Claudia" → "C", "Ana Lima" → "AL" */}
                 <Text style={styles.avatarText}>
                   {gerarIniciais(nome)}
                 </Text>

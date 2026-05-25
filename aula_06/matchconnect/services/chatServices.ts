@@ -1,3 +1,5 @@
+// Motor de comunicação do aplicativo (chat em tempo real).
+
 import {
   collection, addDoc, onSnapshot,
   orderBy, query, serverTimestamp, Timestamp,
@@ -11,10 +13,10 @@ export interface Mensagem {
   timestamp: Timestamp | null;
 }
 
-// Gera ID da conversa sempre igual para os dois lados
+// Gera ID da conversa sempre igual para os dois lados.
 export function getConversaId(uid1: string, uid2: string): string {
   return [uid1, uid2].sort().join("_");
-}
+} // Para garantir que os dois usuários entrem sempre na mesma sala, a função pega os dois IDs, coloca em ordem alfabética e junta os dois com um underline.
 
 export function ouvirMensagens(
   conversaId: string,
@@ -23,7 +25,7 @@ export function ouvirMensagens(
   const ref = collection(db, "conversas", conversaId, "mensagens");
   const q = query(ref, orderBy("timestamp", "asc"));
 
-  const unsubscribe = onSnapshot(q, (snap) => {
+  const unsubscribe = onSnapshot(q, (snap) => { // Abre um canal direto de comunicação com a coleção de mensagens de uma conversa específica.
     const msgs: Mensagem[] = snap.docs.map((d) => ({
       id: d.id,
       texto: d.data().texto,
@@ -33,10 +35,10 @@ export function ouvirMensagens(
     callback(msgs);
   });
 
-  return unsubscribe;
+  return unsubscribe; // Quando o usuário sai da conversa, o aplicativo avisa ao Firebase. Isso economiza bateria e dados de internet, evitando o famoso Memory Leak!
 }
 
-export async function enviarMensagem(
+export async function enviarMensagem( // Quando o usuário digita um texto e clica na setinha de enviar, essa função é ativada.
   conversaId: string,
   texto: string,
   de: string
@@ -45,6 +47,6 @@ export async function enviarMensagem(
   await addDoc(ref, {
     texto: texto.trim(),
     de,
-    timestamp: serverTimestamp(),
+    timestamp: serverTimestamp(), // Garante que a ordem das mensagens fique perfeita e baseada na hora exata do servidor do banco de dados.
   });
 }
